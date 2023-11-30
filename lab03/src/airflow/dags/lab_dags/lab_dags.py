@@ -8,8 +8,6 @@ from lab_dags.data_process import *
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-fig_path = "/tmp"
-
 # Declare Default arguments for the DAG
 default_args = dict(
     start_date=pendulum.datetime(2023, 11, 27, tz="UTC"),
@@ -32,6 +30,9 @@ preprocess_data = PythonOperator(task_id="preprocess_data", python_callable=prep
 
 prepare_model = PythonOperator(task_id="prepare_model", python_callable=prepare_model, dag=dag)
 
+check_model = PythonOperator(task_id="check_model", python_callable=check_model, dag=dag)
+
 # Set the task sequence
 read_data.set_downstream(preprocess_data)
 preprocess_data.set_downstream(prepare_model)
+prepare_model.set_downstream(check_model)
