@@ -3,7 +3,7 @@
 set -e
 
 # drift minio buckets
-docker compose up -d --build v-minio
+docker compose up -d --build minio
 sleep 10
 docker compose exec minio sh -c 'mc mb -p local/$MLFLOW_BUCKET_NAME'
 docker compose exec minio sh -c 'mc anonymous set public local/$MLFLOW_BUCKET_NAME'
