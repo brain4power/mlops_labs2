@@ -1,12 +1,11 @@
-import cudf
 import pandas as pd
 from clearml import Task
 from pycaret.regression import *
 
 task = Task.init(project_name="lab02", task_name="TPS_Jan_2022")
 
-train = cudf.read_csv("data/train.csv", index_col="row_id").to_pandas()
-test = cudf.read_csv("data/test.csv", index_col="row_id").to_pandas()
+train = pd.read_csv("data/train.csv")
+test = pd.read_csv("data/test.csv")
 
 train["date"] = pd.to_datetime(train["date"])
 train["year"] = train["date"].dt.year
@@ -34,7 +33,6 @@ reg = setup(
     target="num_sold",
     data_split_shuffle=False,
     use_gpu=True,
-    silent=True,
     n_jobs=-1,
 )
 
@@ -50,10 +48,12 @@ result = predict_model(final_blend)
 unseen_predictions_blend = predict_model(final_blend, data=test)
 
 sub = pd.DataFrame(
-    list(zip(test.index, unseen_predictions_blend.Label)),
+    list(zip(test.row_id, unseen_predictions_blend.prediction_label)),
     columns=["row_id", "num_sold"],
 )
 
 task.upload_artifact(name="submission", artifact_object=sub)
 
 # sub.to_csv("data/submission.csv", index=False)
+
+task.mark_stopped(status_message="Done")
