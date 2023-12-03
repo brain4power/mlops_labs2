@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+.eggs
+*.pyc
+*.egg-info
+volumes/*
+!volumes/.gitkeep
